@@ -1,0 +1,114 @@
+{
+  "name": "availability",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/availability/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "compiler": "babel",
+        "outputPath": "dist/apps/availability",
+        "index": "apps/availability/src/index.html",
+        "baseHref": "/",
+        "main": "apps/availability/src/main.ts",
+        "tsConfig": "apps/availability/tsconfig.app.json",
+        "assets": [
+          "apps/availability/src/favicon.ico",
+          "apps/availability/src/assets"
+        ],
+        "styles": ["apps/availability/src/styles.css"],
+        "scripts": [],
+        "webpackConfig": "apps/availability/webpack.config.ts",
+        "postcssConfig": "apps/availability/postcss.config.js"
+      },
+      "configurations": {
+        "development": {
+          "extractLicenses": false,
+          "optimization": false,
+          "sourceMap": true,
+          "vendorChunk": true
+        },
+        "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/availability/src/environments/environment.ts",
+              "with": "apps/availability/src/environments/environment.prod.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": false,
+          "webpackConfig": "apps/availability/webpack.config.prod.ts"
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/react:module-federation-dev-server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "availability:build",
+        "hmr": true,
+        "port": 4201
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "availability:build:development"
+        },
+        "production": {
+          "buildTarget": "availability:build:production",
+          "hmr": false
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "executor": "@nx/react:module-federation-static-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "serveTarget": "availability:serve"
+      },
+      "configurations": {
+        "development": {
+          "serveTarget": "availability:serve:development"
+        },
+        "production": {
+          "serveTarget": "availability:serve:production"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/availability/jest.config.ts"
+      }
+    },
+    "container": {
+      "executor": "@nx-tools/nx-container:build",
+      "dependsOn": ["build"],
+      "options": {
+        "engine": "docker",
+        "metadata": {
+          "images": ["availability"],
+          "load": true,
+          "tags": [
+            "type=schedule",
+            "type=ref,event=branch",
+            "type=ref,event=tag",
+            "type=ref,event=pr",
+            "type=sha,prefix=sha-"
+          ]
+        }
+      }
+    }
+  }
+}

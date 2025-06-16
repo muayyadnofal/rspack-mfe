@@ -1,0 +1,29 @@
+{
+  "name": "logs-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/logs-e2e/src",
+  "tags": [],
+  "implicitDependencies": ["logs"],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/logs-e2e/cypress.config.ts",
+        "testingType": "e2e",
+        "devServerTarget": "logs:serve"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "logs:serve:production"
+        },
+        "ci": {
+          "devServerTarget": "logs:serve-static"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
