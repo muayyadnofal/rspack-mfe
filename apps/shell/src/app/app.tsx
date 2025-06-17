@@ -1,6 +1,7 @@
 import * as React from 'react';
 import NxWelcome from './nx-welcome';
 import { Link, Route, Routes } from 'react-router-dom';
+import { Suspense } from 'react';
 
 const Availability = React.lazy(() => import('availability/Module'));
 const Logs = React.lazy(() => import('logs/Module'));
@@ -21,7 +22,10 @@ export function App() {
       </ul>
       <Routes>
         <Route path="/" element={<NxWelcome title="shell" />} />
-        <Route path="/availability" element={<Availability />} />
+        <Route path="/availability/*" element={
+          <Suspense fallback={<div>Loading Remote...</div>}>
+            <Availability />
+          </Suspense>} />
         <Route path="/logs" element={<Logs />} />
       </Routes>
     </React.Suspense>
